@@ -71,8 +71,13 @@ functions:
     handler: handler.projects
     events:
       - http:
-            path: projects
+            path: projects/{id}
             method: get
+            cors: true
+            integration: lambda
+            request:
+                paths:
+                    id: true
     environment:
       UID: ${ssm:ecoleUid}
       SECRET: ${ssm:ecoleSecret}

@@ -3,6 +3,18 @@ import requests
 import os
 
 def projects(event, context):
+
+    if 'path' not in event:
+        return {"statusCode": 400, "body": json.dumps("Missing id param!")}
+
+    params = event['path']
+
+    if 'id' not in params:
+        return {"statusCode": 400, "body": json.dumps("Missing id param!")}
+
+    if str(params['id']) != "20133":
+        return {"statusCode": 400, "body": json.dumps("Sorry but we only allow ryaoi's id :(")}
+
     UID = os.environ['UID']
     SECRET= os.environ['SECRET']
 
@@ -10,16 +22,16 @@ def projects(event, context):
     try:
         body = requests.post("https://api.intra.42.fr/oauth/token", data=payload)
     except Exception as e:
-        return {"statusCode": 404, "body": json.dumps("intra.42.fr endpoint error {}".format(str(e)))}
+        return {"statusCode": 500, "body": json.dumps("intra.42.fr endpoint error {}".format(str(e)))}
     tokenInfo = json.loads(body.content)
     bearer = tokenInfo['access_token']
 
     session = requests.Session()
     session.headers.update({'Authorization': 'Bearer {}'.format(bearer)})
     try:
-        response = session.get('https://api.intra.42.fr/v2/users/20133')
+        response = session.get('https://api.intra.42.fr/v2/users/{}'.format(params['id']))
     except Exception as e:
-        return {"statusCode": 404, "body": json.dumps("intra.42.fr/v2/users/20133 endpoints error {}".format(str(e)))}
+        return {"statusCode": 500, "body": json.dumps("intra.42.fr/v2/user/{} endpoints error {}".format(params['id'], str(e)))}
 
     ryaoiInfo = json.loads(response.content)
     response = {
