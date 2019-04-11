@@ -69,6 +69,7 @@ package:
 functions:
   projects:
     handler: handler.projects
+    timeout: 60
     events:
       - http:
             path: projects/{id}
